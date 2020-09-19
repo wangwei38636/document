@@ -1,0 +1,27 @@
+实验室（疑问与解答）
+环境：jdk1.8.0_231
+
+
+4.√ 如何让单独的log级别设置成info
+	先用logger.getName()获取logger名称，再添加配置logging.level.com.tebaobao.recommend.task.CacheFlushTask=info
+3.√ 查看[mvn spring-boot:run]启动时间？ [ps -eo pid,lstart,cmd | grep java]，找到对应的进程，查看启动时间.
+2. docker打包时，jar太大
+	https://gitee.com/youngboyvip/package-example
+	可以试试依赖外部化
+1.√ 启动方式的区别（java -jar vs mvn spring-boot:run）
+	- 1. 使用java -jar前需要先打包（mvn clean install）生成demo.jar文件，最后再java -jar demo.jar
+	- 2. mvn spring-boot:run 根据最新代码启动项目，和demo.jar无关系
+		 echo $MAVEN_OPTS='-Xms1200m -Xmx1200m'，该方式启动时对应参数
+
+
+
+
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+
+
+
+
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+疑难杂症
+
+1. 

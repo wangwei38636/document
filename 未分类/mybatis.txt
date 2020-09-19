@@ -1,0 +1,89 @@
+mybatis
+
+《mybatis技术内幕》以mybatis3.4为基础  3.4.0 Apr, 2016   3.5.5 Jun, 2020
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+/Library/Java/JavaVirtualMachines/jdk1.8.0_251.jdk
+
+sudo java -cp /Library/Java/JavaVirtualMachines/jdk1.8.0_251.jdk/Contents/Home/lib/sa-jdi.jar sun.jvm.hotspot.HSDB
+open /Library/Java/JavaVirtualMachines/jdk1.8.0_251.jdk/Contents/Home/lib/
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+
+configuration(properties?, settings?, typeAliases?, typeHandlers?, objectFactory?, objectWrapperFactory?, reflectorFactory?, plugins?, environments?, databaseIdProvider?, mappers?)
+
+
+typeAliases
+typeHandlers
+
+BaseBuilder.Configuration(全局唯一)
+BaseBuilder.TypeAliasRegistry(全局唯一)
+BaseBuilder.TypeHandlerRegistry(全局唯一)
+
+1. Mybatis初始化
+2. SqlNode & SqlSource
+3. ResultSetHandler
+4. KeyGenerator
+5. StatementHandler
+6. Executor
+7. 接口层
+
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+mybatis 问题
+
+1. 如何实现的？
+mybatis:
+    config-location: classpath:mybatis/mybatis-config.xml
+    mapper-locations: classpath:mybatis/mapper/*Mapper.xml
+
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+整个执行过程
+
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+JDK动态代理分析
+Mapper的实现没有什么业务，都是模板模样
+InvocationHandler h 的实现类为MapperProxy
+
+最后会执行SqlSession.selectOne()
+MappedStatement
+Executor(CachingExecutor SimpleExecutor)
+StatementHandler
+
+- 1、SqlSession.openSession
+
+- 2、SqlSession.selectOne
+	- SqlSession有3个实现 
+		- 1、DefaultSqlSession（SqlSession的默认实现，非线程安全）
+		- 2、SqlSessionManager（）
+		- 3、SqlSessionTemplate（ThreadSafe SpringManaged）
+- 3、DefaultSqlSession.selectList
+	- MappedStatement（包含sql、入参、入参转换、结果转换等等）
+
+- 4、Executor
+	- CachingExecutor (org.apache.ibatis.executor)
+	- BaseExecutor (org.apache.ibatis.executor)
+		- SimpleExecutor (org.apache.ibatis.executor)
+		- ClosedExecutor in ResultLoaderMap (org.apache.ibatis.executor.loader)
+		- ReuseExecutor (org.apache.ibatis.executor)
+		- BatchExecutor (org.apache.ibatis.executor)
+
+
+- 5、SqlSource
+	- ProviderSqlSource (org.apache.ibatis.builder.annotation)
+	- StaticSqlSource (org.apache.ibatis.builder)
+	- DynamicSqlSource (org.apache.ibatis.scripting.xmltags)
+	- RawSqlSource (org.apache.ibatis.scripting.defaults)
+
+
+- 6、BoundSql
+
+
+
+
+
+
+
+
+
+
+
+
+

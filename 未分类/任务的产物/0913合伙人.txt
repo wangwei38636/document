@@ -1,0 +1,9 @@
+一.接口
+	http://gw.tebaobao.vip/test-jservice
+	http://gw.tebaobao.vip/beta-jservice
+	http://gw.tebaobao.vip/prod-jservice
+		/service/cloud_group/sales_rank （团队热卖排名）
+
+	- token用jservice统一方式
+	
+	

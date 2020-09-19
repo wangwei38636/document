@@ -1,0 +1,125 @@
+工作日记流水
+2020年07月07日14:19:05
+	- 当前有2个任务，
+		任务一：亲密度缓存、贡献分缓存的问题
+			- 具体问题：当前缓存同步到db操作，只在接口被调用的时候才会触发（并且要满足上次同步已经超过半小时）
+			- 解决办法：添加一个task，每20分钟scan全部缓存，将匹配的缓存同步到db
+2020年07月13日09:49:32
+	- 任务一
+		- 发现bug，表t_player_viewer_link有重复数据，该表只有id为索引，并且调用save方法
+			- 解决办法：1.修复数据 2.修正代码 3.添加（player_id，viewer_id）的唯一索引
+2020年07月16日10:00:42
+	- 我去！昨天跟运维交流他说晚上9点后操作，但是竟然晚上6.30就发布了，没有索引高频接口查询1500w数据量的表！！！系统直接崩溃了了了了了了~~~论发布前一起过一遍的重要性！就算没测试，没测试环境，至少要一起过下配置、sql吧？哎哎，老子刚来3行代码搞崩系统！！！英语都没好好背，昨晚快点
+	- 这运维真难沟通，没说什么就叽里呱啦一堆，然后这么想，但不要对任何人表露哦，大人，大人
+2020年07月17日09:51:35
+	- 今天就测试测试 bug修复-cacheFlushTask
+2020年07月21日11:25:27
+	- 唯一索引加好了，准备CacheFlush功能上线吧
+2020年07月24日10:57:58
+	- 提交了若干个tebaobaoshop库中的Entity. 继续将简单的功能（支付添加亲密度）完成
+2020年07月28日10:22:25
+	- 好几天没记咯
+2020年07月29日09:42:13
+	- 订单相关的接口整理，以及先写出java接口
+	- 时间过得真快啊。先做点transaction管理理解
+2020年07月31日10:58:25
+	- 工作上没什么事，调试transactionManager吧
+2020年08月05日17:20:20
+	- 刚接了团吧的活，还有架构上先处理api网关
+2020年08月11日09:31:09
+	- 接了个京东云小店，商品推广，做成独立服务
+2020年08月13日15:03:25
+	- 添加索引，优化团吧查询
+2020年08月21日10:13:50
+	- 就这样吧，简单快速完成任务，想想如何提升项目经验
+2020年08月27日17:05:42
+	- 这两天学下python，做个爬虫
+
+
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+工作执行方案记录
+- 须知：1.AppendOnly（禁止涂改，只做记录）
+
+2020年07月17日：（编号 p001）修复数据（微信发给运维的内容）
+	共需要两个文件
+		1. demo-filter-0.0.1-SNAPSHOT.jar
+		2. application.yml
+	application.yml为配置文件，需要修改对应参数：
+		1. mysql相关，连接池最大连接数为10
+		2. redis相关
+		3. 端口默认为9888
+	执行命令：
+		1. 启动程序，按需修改，注意将application.yml与demo-filter-0.0.1-SNAPSHOT.jar放在同一文件夹
+			nohup java -jar demo-filter-0.0.1-SNAPSHOT.jar &
+		2. 启动任务，注意按需修改域名、端口、转义字符，该接口3个参数（groupCount、minId、maxId）就用以下的值
+			curl http://localhost:9888/caller/fix?groupCount=1000\&minId=0\&maxId=11000000
+	注意事项：
+		1. 该程序会有大量的数据库简单请求，若影响到其他服务，可以优先停止该服务，kill掉。若关闭后不要再启动，请通知我。
+		2. 程序预计需要执行 7~10小时
+		3. 有问题随时联系
+2020年07月20日：（编号 p001-2）修复数据-最终 （微信发给运维的内容）
+	具体流程：
+	步骤1：启动demo-filter-0.0.1-SNAPSHOT.jar  curl http://localhost:9888/caller/fix?groupCount=1000\&minId=10500000\&maxId=11000000
+		注意：
+			1. curl的参数已经调整，应该很快执行完成 
+			2. 步骤1执行完成后通知下我，大概10分钟之后，没问题再通知你继续执行
+	步骤2：添加linkid的唯一索引   alter table t_player_viewer_link add unique uni_linkid(linkid);
+	步骤3：删除上次加的linkid的普通索引，因为步骤2添加了相同字段的唯一索引了
+2020年08月05日：（编号 p002）OOM问题排查
+	- 使用MAT分析内存
+		One instance of "org.hibernate.internal.SessionFactoryImpl" loaded by "java.net.URLClassLoader @ 0xb6f70270" occupies 545,797.96 KB (70.66%) bytes. The memory is accumulated in one instance of "org.hibernate.internal.util.collections.BoundedConcurrentHashMap$Segment[]" loaded by "java.net.URLClassLoader @ 0xb6f70270".
+		Keywords
+		org.hibernate.internal.util.collections.BoundedConcurrentHashMap$Segment[]
+		java.net.URLClassLoader @ 0xb6f70270
+		org.hibernate.internal.SessionFactoryImpl
+	- 网上类似经历
+		https://juejin.im/post/6844904002396635143 【记一次OOM问题排查过程】
+		https://www.jianshu.com/p/763b1aa00fb4 【Hibernate in clause sql 造成的内存泄漏】
+	- 关于queryCache
+		https://stackoverflow.com/questions/31557076/spring-hibernate-query-plan-cache-memory-usage
+	- in代码
+		接口：WxPublicPlatformAction.getServiceOpenIdsByUnionIds(String[] unionIds)
+	- 解决办法-限制query缓存
+		spring:
+		  jpa:
+		    properties:
+		      hibernate:
+		        query:
+		          plan_cache_max_size: 64
+		          plan_parameter_metadata_max_size: 32
+	- 相关命令 pid=10086
+		jstack 10086
+			查看线程信息
+		jstat -gc -h10 -t 10086 500
+			每5秒输出一次gc情况
+		jmap -histo 10086 | head -n50
+			输出类占用内存情况
+		jmap -dump:format=b,file=memory.dump 10086
+			将heap转储为文件，以便使用MAT进行分析
+2020年08月13日
+	- tebaobaoshop库添加索引，解决团吧列表查询接口需要2s的问题
+		alter table cloud_tieba_article add index idx_gi_ut(group_id,update_time);
+
+2020年08月21日 搜索优化的几个简单接口
+	- 1. 获取最近搜索接口
+		- eolinker已经调通（测试环境）
+			http://eolinker.tebaobao.com/eolinker_os/index.html#/home/project/inside/api/detail?groupID=194&apiID=1200&projectName=TbbJava&projectID=8
+	- 2. 清除最近搜索接口
+		- eolinker已经调通（测试环境）
+			http://eolinker.tebaobao.com/eolinker_os/index.html#/home/project/inside/api/detail?groupID=194&apiID=1202&projectName=TbbJava&projectID=8
+	- 3. banner接口
+		- eolinker已经调通（测试环境）
+			- 该接口由多多提供
+			- position填 "搜索页banner广告位"，没错就是中文
+				https://tebaobao.w.eolinker.com/#/home/ams/project/inside/api/detail?apiID=4324873&groupID=1059514&projectHashKey=JPkcI77caa1e0edeadeb8f83a16fe472043d4d27f374bf0&spaceKey=tebaobao
+	- 4. 获取热词榜
+		http://eolinker.tebaobao.com/eolinker_os/index.html#/home/project/inside/api/detail?groupID=194&apiID=1206&projectName=TbbJava&projectID=8
+	- 5. 获取最近搜索、外部搜索、获取热词榜 三个接口，token统一改成用header传递，标签名为"token"
+2020年08月28日
+	- 改动：接口-店铺详情
+	http://eolinker.tebaobao.com/eolinker_os/index.html#/home/project/inside/api/detail?groupID=196&apiID=1208&projectName=TbbJava&projectID=8
+	1. 参数从shopId 改为 supplierId
+	2. 当accessType为0或空时，返回全部数据。accessType=1是为了给商品详情使用。
+	3. 当accessType = 1时，只返回部分数据：shopName(店铺名称), shopImg(店铺头像), shopDesc(店铺简介), 店铺评分相关(experience, itemAsDescribed, communication, shippingSpeed, itemAsDescribedCompare, communicationCompare, shippingSpeedCompare)
+	4. 现在后台只有 商品相符、卖家服务、物流服务，没有行业平均值数据，所以当 itemAsDescribedCompare|communicationCompare|shippingSpeedCompare为空时，不展示'同行比较'。但倘若后台传这3个值，便会展示'同行比较'
+	5. 当前 后台没有 '店铺简介'数据，所以shopDesc为null时不展示'店铺简介'。

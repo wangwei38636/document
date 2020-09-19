@@ -1,0 +1,60 @@
+服务器与环境
+
+- 95服务器
+	ssh root@47.103.5.95
+	ssh root@172.19.17.14
+	Zxcvbnm132
+
+- 74服务器
+	ssh root@47.103.39.74
+	ssh root@172.19.17.14
+	Zxcvbnm132
+
+- 测试环境
+	ssh root@47.116.12.221
+	Zxcvbnm132
+
+- java域名
+	jservice域名
+	jubao域名
+	community域名
+
+- mysql数据库
+
+	- tbb_生产2-别写哦
+		mysql -h a7grgzd2jt8aerkm65lz-rw4rm.rwlb.rds.aliyuncs.com -u lops -p
+		1qaz@WSX
+
+	- tbb_生产-你可别写哦
+		mysql -h rm-uf664v18to447v7b82o.mysql.rds.aliyuncs.com -u tbb_java_rw -p
+		tbb_java_rwabc123%
+	
+	- tbb_生产-只读
+		mysql -h rr-uf65jzlxnjiiwu30xzo.mysql.rds.aliyuncs.com -u readonly1 -p
+		Tbb20200606
+	
+	- tbb_测试
+		mysql -h rm-uf65x9849665cjm02io.mysql.rds.aliyuncs.com -u lops -p
+		1qaz@WSX
+
+
+
+
+- redis缓存
+	- 生产java
+		redis-cli -h r-uf61t6zwghpkopj1yzpd.redis.rds.aliyuncs.com -p 6379 -a TBBRedisTmjAwPyc137
+	- 生产php	
+		redis-cli -h r-uf6pu6srwnhuvw110wpd.redis.rds.aliyuncs.com -p 6379 -a TBBRedisTmjAwPyc137
+	- 测试环境php
+		redis-cli -h r-uf6d425q7t1g6rhv97pd.redis.rds.aliyuncs.com -p 6379 -a TBBRedisTmjAwPyc137
+
+
+- 仅dump结构
+	mysqldump --opt -d tebaobaoshop -h rr-uf65jzlxnjiiwu30xzo.mysql.rds.aliyuncs.com -u readonly1 -p Tbb20200606 > xxx.sql 
+	mysqldump --opt -d tebaobaoshop　-hrr-uf65jzlxnjiiwu30xzo.mysql.rds.aliyuncs.com -u readonly1 -p 　>　xxx.sql　　 
+
+- 阿里云
+	https://homenew.console.aliyun.com/
+	5144931@qq.com
+	Qj123456
+

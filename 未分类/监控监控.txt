@@ -1,0 +1,34 @@
+监控监控
+
+Prometheus Grafana Kibana
+- 端口
+	1. Prometheus
+		- 9090
+	2. Grafana
+		- 3000
+
+
+
+- Prometheus
+	- 文档单词
+		succinct 简介的；明了的 [səkˈsɪŋkt]
+		tailor 裁缝；专门定制 [ˈteɪlə(r)]
+		industry 产业；工业；勤勉 [ˈɪndəstri]
+		drastically 彻底地；强烈地
+	- 启动方式
+		- 本地
+			prometheus --config.file=/Users/zl/work/software/prometheus/prometheus.yml	
+	- 页面
+		http://localhost:9090/graph		查询页面
+		http://localhost:9090/metrics	prometheus暴露的度量接口 (http://localhost:9090)
+	- 名词
+		- Metric types
+			- Counter(计数器)
+			- Gauge(测量器)
+			- Histogram(柱状图)
+			- Summary(总结)
+- 监控界名词
+	- 被监控的对象
+		- CPU/内存使用情况（CPU and memory usage）
+		- 传感器数据（Sensor data）
+		- 股市指数（Stock market index）

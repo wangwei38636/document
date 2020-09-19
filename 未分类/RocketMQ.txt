@@ -1,0 +1,68 @@
+RocketMQ
+
+- AMQP (Advanced Message Queuing Protocol 高级消息队列协议)
+- spring-amqp is the base abstraction, and spring-rabbit is the RabbitMQ implementation.
+- oss (object storage service 对象存储服务)
+
+命名服务
+
+
+
+
+
+
+
+
+
+
+
+
+-- -- -- -- -- Quick Start -- -- -- -- -- 
+
+- rocketmq打包
+	- 进入目录
+cd /Users/zl/work/software/rocketmq
+mvn -Prelease-all -DskipTests clean install -U
+
+
+- 本地方式启动 v_4.7.1 http://rocketmq.apache.org/docs/quick-start/
+	- 进入目录
+cd /Users/zl/work/software/rocketmq/distribution/target/rocketmq-4.7.1/rocketmq-4.7.1
+	- 启动nameServer 查看日志
+nohup sh bin/mqnamesrv &
+sh bin/mqnamesrv
+tail -f -n100 ~/logs/rocketmqlogs/namesrv.log
+	- 启动broker
+nohup sh bin/mqbroker -n localhost:9876 &
+sh bin/mqbroker -n localhost:9876
+tail -f -n100 ~/logs/rocketmqlogs/broker.log 
+	- 测试生产者发送数据
+# export NAMESRV_ADDR=localhost:9876
+sh bin/tools.sh org.apache.rocketmq.example.quickstart.Producer
+	- 测试消费者消费数据
+sh bin/tools.sh org.apache.rocketmq.example.quickstart.Consumer
+	- 关闭二者
+sh bin/mqshutdown broker
+sh bin/mqshutdown namesrv
+
+	- 启动rocketmq-cosole
+cd /Users/zl/work/software/rocketmq-externals/rocketmq-console
+mvn spring-boot:run
+http://localhost:8080
+
+
+	- 使用CLI Admin Tool 
+bin/mqadmin clusterList
+bin/mqadmin topicList
+
+
+- docker方式启动
+	- nameServer
+docker run -d --restart=always --name rmqnamesrv --network=rocket --ip=172.174.0.2 -p 9876:9876 -v /tmp/namesrv/logs:/root/logs -v /tmp/namesrv/store:/root/store rocketmqinc/rocketmq:latest sh mqnamesrv
+	- broker
+docker run -d --restart=always --name rmqbroker --network=rocket --ip=172.174.0.3 -p 10911:10911 -p 10909:10909 -v /tmp/broker/logs:/root/logs -v /tmp/broker/store:/root/store -e "NAMESRV_ADDR=172.174.0.2:9876" rocketmqinc/rocketmq:latest sh mqbroker -c /opt/rocketmq-4.4.0/conf/broker.conf
+
+docker run -d --restart=always --name rmqconsole --network=rocket --ip=172.174.0.4 -p 8080:8080 -e "JAVA_OPTS=-Drocketmq.namesrv.addr=172.174.0.2:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false -Duser.timezone='Asia/Shanghai'" styletang/rocketmq-console-ng 
+
+
+-e "TZ=Asia/Shanghai" 

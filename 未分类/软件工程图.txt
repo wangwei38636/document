@@ -1,0 +1,9 @@
+软件工程图
+
+流程图、ER图、状态转换图、决策树、
+UML统一建模语言(Unified Modeling Language)
+	- 状态图(Stage Diagram)
+	- 时序图、序列图(Sequence Diagram)
+	- 协作图(Communication Diagram)
+	- 活动图(Activity Diagram)
+
