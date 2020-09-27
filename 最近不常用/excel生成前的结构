@@ -1,0 +1,55 @@
+excel生成前的结构
+
+
+{
+	$product_name:{
+		'colours':{
+			$colour_name:{
+				'row_count': 99,
+				'column_count': 5,
+				'pre_title':['date','time'],
+				'title': ['small','middle','large'],
+				'pre_date': [
+								['09-23','21:00'],
+								['09-23','22:00']
+							]
+				'data': [
+							[22,14,32],
+							[22,14,32]
+						]
+			}
+		}
+	}
+}
+
+{
+	$product_name:{
+		'book': $workbook,
+		'colours': {
+			$colour_name: {
+				'sheet': $worksheet,
+				'sheet_name': $sheetName
+			}
+		}
+	}
+}
+
+
+- meta_data的结构
+[
+	{
+		'product': $product_name,
+		'colours': [
+			{
+				'colour': $colour_name,
+				'colour_short_name': $colour_short_name,
+				'sizes': [
+					{
+						'size': 'Small',
+						'stock': 0
+					}
+						 ]
+			}
+		]
+	}
+]
