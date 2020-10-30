@@ -1,0 +1,48 @@
+- elastic基础
+	- 基础-Elastic权威指南
+		https://www.elastic.co/guide/cn/elasticsearch/guide/current/foreword_id.html
+	- 基础-Kibana用户手册
+		https://www.elastic.co/guide/cn/kibana/current/index.html
+	- spring data elastic
+		https://docs.spring.io/spring-data/elasticsearch/docs/current/reference/html/#reference
+
+
+稍微mark下：
+	延迟队列
+
+
+
+
+
+1. Cache vs Buffer
+2. org.springframework.cache.Cache and org.springframework.cache.CacheManager
+3.	
+	@Cacheable: Triggers cache population.
+    @CacheEvict: Triggers cache eviction.
+    @CachePut: Updates the cache without interfering with the method execution.
+    @Caching: Regroups multiple cache operations to be applied on a method.
+    @CacheConfig: Shares some common cache-related settings at class-level.
+
+
+
+
+
+ElasticSearch Client
+
+1.Transport Client 7.0弃用,8.0移除
+2.
+
+7.1 Usage of the ElasticsearchTemplate is deprecated as of version 4.0, use ElasticsearchRestTemplate instead. 
+
+6.As of version 4.0 only the Meta Object Mapping is used, 
+	the Jackson based mapper is not available anymore and the MappingElasticsearchConverter is used
+MappingElasticsearchConverter代替了Jackson方式
+
+
+
+
+
+
+sniff 抽鼻子;闻
+criteria 标准;原则
+coordinate 使协调;坐标;套装
