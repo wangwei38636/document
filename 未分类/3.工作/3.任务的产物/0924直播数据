@@ -1,0 +1,90 @@
+-- mission
+	1. 直播推流、断流回调，更新tbb_live_rooms状态
+	2. im回调，维护聊天室状态，统计聊天室实时在线人数
+
+
+-- im
+	- im回调
+		1. 创建群组之后回调
+		2. 新成员入群之后回调
+		3. 群成员离开之后回调
+		4. 群组解散之后回调
+	- 角色：
+		群主、管理员、成员
+
+
+-- 问题与相关处理
+1. 群组无法自动删除
+2. 群组无法自动踢人
+	- 直播群不支持踢人，支持禁言达成类似效果，不支持定期移除不在线的群成员
+	- 临时会议群支持（踢人），支持定期移除不在线的群成员
+
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+
+-- 腾讯云直播疑似有用接口
+    - 查询推断流事件
+    - 获取禁推流列表
+    - 恢复直播推流
+    - 禁推直播流
+    - 断开直播流
+    - 查询流状态
+    - 查询历史流列表
+	- 查询直播中的流
+
+-- 表结构
+CREATE TABLE `tbb_live_rooms_ext` (
+                            `live_room_id` int(11) NOT NULL COMMENT '房间id',
+                            `start_time` int(11) NOT NULL COMMENT '开始时间',
+                            `end_time` int(11) NOT NULL COMMENT '结束时间',
+                            `duration` int(11) NOT NULL COMMENT '直播时长(单位：秒)，不包含断流重连期间的时间，小于等于[结束时间-开始时间]',
+                            PRIMARY KEY (`live_room_id`)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='直播间扩展表';
+
+-- 添加配置
+	nacos添加callback
+		- 克隆tbb
+		- 添加tencentSecretId、tencentSecretKey
+
+-- 方案
+	- 1.维护tbb_live_rooms的disconnect_time （注意：push_server：推流服务商 1七牛，2腾讯云）
+		- 推断流通知回调接口（依据php代码）：更新disconnect_time，注意新的disconnect_time要大于原有的disconnect_time
+		- 断流补漏task：
+			- 查询正在直播的接口，跟（select * from tbb_live_rooms where 直播中）对比得到List<stream_id>
+		 	- 多出来的异常流[app-云]，超过一定时间，[请求流状态]、[请求流事件]，就将其设置成is_stopped=1
+		 	- 多出来的异常流[app-云]，[请求流状态]，将disconnect_time置成0
+		- 直播结束task：
+			- 每分钟扫描结束的直播并且未插入tbb_live_rooms_ext的tbb_live_rooms记录
+				[请求流事件]，计算开始时间、结束时间、直播时长
+-- 问题与相关处理
+	- 1. 断流回调丢失
+	- 2. 推流回调丢失
+	- 3. 存在group_id或stream_id为空的数据，无视group_id，sql排除stream_id为空的数据
+-- tbb_live_rooms状态
+	- 创建直播：is_stopped = 0 and is_open = 0 and is_delete = 0 and is_forbidden = 0 and is_test = 0 and start_time = 0
+	- 开始直播：is_stopped = 0 and is_open = 1 and is_delete = 0 and is_forbidden = 0 and is_test = 0 and start_time = 0
+	- 结束直播：is_stopped = 1 and is_open = 1 and is_delete = 0 and is_forbidden = 0 and is_test = 0 and start_time = 0
+	- 意外退出直播-断流通知回调后：disconnect_time = 1500000000 and is_stopped = 0 and is_open = 1 
+										and is_delete = 0 and is_forbidden = 0 and is_test = 0 and start_time = 0
+	- 断流task：disconnect_time = 1500000000 and is_stopped = 1 and is_open = 1 
+										and is_delete = 0 and is_forbidden = 0 and is_test = 0 and start_time = 0
+
+
+
+
+-- 腾讯接口
+	- 查询流状态
+		- 当流id不存在时，返回 {"Response":{"RequestId":"2092042b-e5ba-4795-8384-160de2dc3ecd","StreamState":"inactive"}}
+		- 当流id存在且为断流状态时，返回 {"Response":{"RequestId":"2092042b-e5ba-4795-8384-160de2dc3ecd","StreamState":"inactive"}}
+		- 当流id存在且为推流状态时，返回 {"Response":{"RequestId":"2092042b-e5ba-4795-8384-160de2dc3ecd","StreamState":"active"}}
+
+
+-- 正在执行 1.2.1
+
+-- 1.主播状态-任务分解
+	1. 写一个腾讯云推断流回调接口
+		- 配置测试回调模板
+		- 记录回调数据
+	2. 写接口请求
+		- 1.腾讯云-查询所有正在直播的流的状态
+
+

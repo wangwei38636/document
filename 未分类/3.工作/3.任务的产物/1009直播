@@ -1,0 +1,32 @@
+
+
+- 功能点
+	- 1.腾讯回调接口
+		流程：
+			1.请求校验（暂不做）
+				1.校验过期时间，过期即抛弃
+				2.验证签名
+			2.若是断流：
+				1.根据stream_id获取room_id
+				2.[直播中] --> [直播中，断流回调后]
+				3.IM通知
+			2.若是推流：
+				1.根据stream_id获取room_id
+				2.[直播中，断流回调后] --> [直播中]
+				3.IM通知
+		说明：
+			1.请求参数：
+				1.事件类型：推流|断流
+				2.流id：stream_id
+			2.直播间room状态：（不用理会是否为试播is_test）
+				1.直播中 [is_open = 1 and is_stopped = 0 and is_delete = 0 and is_forbidden = 0 and start_time = 0 and disconnect_time = 0]
+				2.直播中，断流回调后 [is_open = 1 and is_stopped = 0 and is_delete = 0 and is_forbidden = 0 and start_time = 0 and disconnect_time = 1602211391]
+				3.task结束直播 [is_open = 1 and is_stopped = 1 and is_delete = 0 and is_forbidden = 0 and start_time = 0 and disconnect_time = 1602211391]
+				4.直接结束直播 [is_open = 1 and is_stopped = 1 and is_delete = 0 and is_forbidden = 0 and start_time = 0 and disconnect_time = 0]
+			3.sql（详情见idea console）
+
+
+	- 2.七牛回调接口
+
+	- 3.直播结束结算task
+

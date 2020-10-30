@@ -1,0 +1,32 @@
+- nacos启动
+	- 本地启动
+		git clone https://github.com/alibaba/nacos.git
+		cd nacos/
+		mvn -Prelease-nacos -Dmaven.test.skip=true clean install -U  
+		ls -al distribution/target/
+		// change the $version to your actual path
+		cd distribution/target/nacos-server-$version/nacos/bin
+		sh startup.sh -m standalone
+		sh shutdown.sh
+	- docker方式-单机
+		docker run -d --restart=always --name=nacos -p 8848:8848 -e PREFER_HOST_MODE=hostname -e MODE=standalone -v ~/work/docker/nacos/nacos_1/custom.properties:/home/nacos/init.d/custom.properties nacos/nacos-server
+- prometheus启动
+	- 本地方式
+		prometheus --config.file=~/work/docker/prometheus/prometheus.yml
+	- docker方式-单机
+		docker run -d --restart=always --name prometheus -p 9090:9090 -v ~/work/docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus
+- grafana启动
+	- docker方式-单机
+		docker run -d --restart=always --name=grafana -p 3000:3000 -v ~/data/docker/grafana:/var/lib/grafana -v ~/work/docker/grafana/grafana.ini:/etc/grafana/grafana.ini grafana/grafana
+- sentinal-dashboard启动
+	- 本地方式
+		java -Dserver.port=9999 -Dcsp.sentinel.dashboard.server=localhost:9999 -Dproject.name=sentinel-dashboard -jar ~/work/software/sentinel-dashboard-1.8.0.jar
+
+
+
+
+
+
+
+- logstash
+	- docker方式-单机

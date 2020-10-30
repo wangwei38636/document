@@ -1,0 +1,4 @@
+- JVM -D（命令行参数）
+	使用场景：java -jar -Dserver.port=8080 xxx.jar
+- JVM flag -XX
+- 环境变量

@@ -11,7 +11,7 @@
 - 测试环境
 	ssh root@47.116.12.221
 	Zxcvbnm132
-
+	/opt/jservice/service
 - java域名
 	jservice域名
 	jubao域名
@@ -26,6 +26,9 @@
 		tbb_java_rwabc123%
 	- tbb_生产-只读
 		mysql -h rr-uf65jzlxnjiiwu30xzo.mysql.rds.aliyuncs.com -u readonly1 -p
+		Tbb20200606
+	- tbb_生产-只读-2
+		mysql -h rr-uf65jzlxnjiiwu30xzo.mysql.rds.aliyuncs.com -u tbb_read_only -p
 		Tbb20200606
 	- tbb_测试
 		mysql -h rm-uf65x9849665cjm02io.mysql.rds.aliyuncs.com -u lops -p
